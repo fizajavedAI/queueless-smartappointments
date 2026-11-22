@@ -1,0 +1,11 @@
+import React,{useState} from 'react';
+import {Routes,Route,Navigate,useLocation,useNavigate,Link} from 'react-router-dom';
+import {StoreProvider,useStore} from './store';
+import {Layout,Assistant} from './components';
+import {Landing,Login,Register,Dashboard,Booking,Appointments,Queue,Departments,Notifications,Profile,Support,AdminLogin,AdminDashboard,ManageAppointments,QueueAdmin,UsersAdmin,DepartmentsAdmin,Reports,AdminSettings,NotFound} from './pages';
+function Guard({children,admin=false}){const {user}=useStore();if(!user)return <Navigate to={admin?'/admin/login':'/login'} replace/>;if(admin&&user.role!=='admin')return <Navigate to="/dashboard" replace/>;return children}
+function Shell(){const location=useLocation();const publicPaths=['/','/login','/register','/admin/login'];const isPublic=publicPaths.includes(location.pathname);return <>{isPublic?<Routes><Route path="/" element={<Landing/>}/><Route path="/login" element={<Login/>}/><Route path="/register" element={<Register/>}/><Route path="/admin/login" element={<AdminLogin/>}/><Route path="*" element={<NotFound/>}/></Routes>:<Layout><Routes>
+<Route path="/dashboard" element={<Guard><Dashboard/></Guard>}/><Route path="/book" element={<Guard><Booking/></Guard>}/><Route path="/appointments" element={<Guard><Appointments/></Guard>}/><Route path="/queue" element={<Guard><Queue/></Guard>}/><Route path="/departments" element={<Departments/>}/><Route path="/notifications" element={<Guard><Notifications/></Guard>}/><Route path="/profile" element={<Guard><Profile/></Guard>}/><Route path="/support" element={<Support/>}/>
+<Route path="/admin" element={<Guard admin><AdminDashboard/></Guard>}/><Route path="/admin/appointments" element={<Guard admin><ManageAppointments/></Guard>}/><Route path="/admin/queue" element={<Guard admin><QueueAdmin/></Guard>}/><Route path="/admin/users" element={<Guard admin><UsersAdmin/></Guard>}/><Route path="/admin/departments" element={<Guard admin><DepartmentsAdmin/></Guard>}/><Route path="/admin/reports" element={<Guard admin><Reports/></Guard>}/><Route path="/admin/settings" element={<Guard admin><AdminSettings/></Guard>}/><Route path="*" element={<NotFound/>}/>
+</Routes></Layout>}<Assistant/></>}
+export default function App(){return <StoreProvider><Shell/></StoreProvider>}
